@@ -17,8 +17,8 @@ namespace Linkaging
 
     class HttpRequest;
 
-    std::function<void(void)>;
-    std::function<void()>;
+    std::function<void(void)> b;
+    std::function<void(void)> a;
 
     class Timer
     {

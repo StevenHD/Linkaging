@@ -11,10 +11,12 @@
 #include <queue>
 #include <vector>
 #include <thread>
+#include <string>
 #include <chrono>
 #include <cstring>      // bzero
 #include <cassert>
-#include <string>
+#include <iostream>
+#include <memory>
 #include <stdio.h>      // perror
 #include <fcntl.h>      // fcntl
 #include <unistd.h>     // fcntl, close
@@ -26,6 +28,7 @@
 #include <algorithm>
 #include <exception>
 #include <functional>
+#include <sys/epoll.h>
 #include <sys/socket.h>     // socket, setsockopt, bind, listen
 #include <arpa/inet.h>      // htonl, htons
 #include <condition_variable>
