@@ -13,6 +13,8 @@ add_executable(Linkaging all.h main.cpp
         Server/Timer.h Server/Timer.cpp
         Server/Utils.h Server/Utils.cpp
         Server/Epoll.h Server/Epoll.cpp
+        Server/HttpResponse.h   Server/HttpResponse.cpp
+        Server/LkgServer.h Server/LkgServer.cpp
         )
 
 target_link_libraries(Linkaging pthread)

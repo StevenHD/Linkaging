@@ -74,7 +74,7 @@ namespace Linkaging
             m_nowTime = Clock::now();
         }
 
-        void addTimer(HttpRequest *req, int &time_out, const TimeoutCallback &cb);
+        void addTimer(HttpRequest *req, const int &time_out, const TimeoutCallback &cb);
 
         void delTimer(HttpRequest *req);
 
