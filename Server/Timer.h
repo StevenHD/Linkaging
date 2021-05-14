@@ -24,12 +24,12 @@ namespace Linkaging
     {
     private:
         TimeStamp m_expiredTime;
-        TimeoutCallback m_callBack;
+        TimeoutCallback c_callBack;
         bool m_delete;
 
     public:
         Timer(const TimeStamp &when, const TimeoutCallback &cb)
-                : m_expiredTime(when), m_callBack(cb), m_delete(false) {}
+                : m_expiredTime(when), c_callBack(cb), m_delete(false) {}
 
         ~Timer() {}
 
@@ -42,7 +42,7 @@ namespace Linkaging
         }
 
         void runCallBack() {
-            m_callBack();
+            c_callBack();
         }
 
         TimeStamp getExpiredTime() const {

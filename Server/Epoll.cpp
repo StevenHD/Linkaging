@@ -70,8 +70,39 @@ void Epoll::handleEvent(int lsnFd, std::shared_ptr<ThreadPool> &threadPool, int 
     assert(eventsNum > 0);
     for (int i = 0; i < eventsNum; i ++ )
     {
-
+        HttpRequest* req = (HttpRequest*)(m_events[i].data.ptr);
+        int fd = req->getFd();
+        if (fd == lsnFd)
+        {
+            c_buildConnection;
+        }
+        else
+        {
+            if ((m_events[i].events & EPOLLERR) ||
+                (m_events[i].events & EPOLLHUP) ||
+                (m_events[i].events & EPOLLIN))
+            {
+                req->setNoWorking();
+                c_closeConnection(req);
+            }
+            else if (m_events[i].events & EPOLLIN)
+            {
+                req->setWorking();
+                threadPool->pushJob(std::bind(c_request, req));
+            }
+            else if (m_events[i].events & EPOLLOUT)
+            {
+                req->setWorking();
+                threadPool->pushJob(std::bind(c_response, req));
+            }
+            else
+            {
+                printf("[Epoll::handleEvent()] unexpected event\n");
+            }
+        }
     }
+
+    return;
 }
 
 }

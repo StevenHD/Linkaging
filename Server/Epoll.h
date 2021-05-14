@@ -35,22 +35,22 @@ public:
 public:
     void setConnectionCallbak(const NewConnectionCallbak& cb)
     {
-        m_connection = cb;
+        c_buildConnection = cb;
     }
 
     void setCloseConnectionCallbak(const CloseConnectionCallbak& cb)
     {
-        m_closeConnection = cb;
+        c_closeConnection = cb;
     }
 
     void setRequest(const HandleRequestCallbak& cb)
     {
-        m_request = cb;
+        c_request = cb;
     }
 
     void setResponse(const HandleResponseCallbak& cb)
     {
-        m_response = cb;
+        c_response = cb;
     }
 
 public:
@@ -62,10 +62,10 @@ private:
     int   m_epollFd;
     m_eventList m_events;
 
-    NewConnectionCallbak m_connection;
-    CloseConnectionCallbak m_closeConnection;
-    HandleRequestCallbak m_request;
-    HandleResponseCallbak m_response;
+    NewConnectionCallbak c_buildConnection;
+    CloseConnectionCallbak c_closeConnection;
+    HandleRequestCallbak c_request;
+    HandleResponseCallbak c_response;
 };
 
 }   // namespace Linkaging
