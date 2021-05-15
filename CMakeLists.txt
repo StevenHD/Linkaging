@@ -15,6 +15,7 @@ add_executable(Linkaging all.h main.cpp
         Server/Epoll.h Server/Epoll.cpp
         Server/HttpResponse.h   Server/HttpResponse.cpp
         Server/LkgServer.h Server/LkgServer.cpp
+        Server/main.cpp
         )
 
 target_link_libraries(Linkaging pthread)

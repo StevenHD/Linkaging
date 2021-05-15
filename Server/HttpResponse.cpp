@@ -74,7 +74,7 @@ void HttpResponse::doStaticRequest(Buffer &output, long fileSize)
     {
         m_statusCode = 400; // ?
         doErrorResponse(output, "Bad Request");
-        return;;
+        return;
     }
 
     output.append("HTTP/1.1 "+ std::to_string(m_statusCode) + " " + itr->second + "\r\n");
@@ -87,6 +87,7 @@ void HttpResponse::doStaticRequest(Buffer &output, long fileSize)
     {
         output.append("Connection: close\r\n");
     }
+
     output.append("Content-type: " + getFileType() + "\r\n");
     output.append("Content-length: " + std::to_string(fileSize) + "\r\n");
     output.append("Server: Linkaging\r\n");

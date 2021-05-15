@@ -8,11 +8,10 @@
 #include "../all.h"
 #include "Buffer.h"
 
-namespace Linkaging
-{
-
 #define STATIC_ROOT "../www"
 
+namespace Linkaging
+{
 class Timer;
 
 class HttpRequest
@@ -148,8 +147,7 @@ private:
     {
         std::string subPath;
         subPath.assign(begin, end);
-        if (subPath == "/")
-            subPath = "/index.html";
+        if (subPath == "/") subPath = "/index.html";
         m_path = STATIC_ROOT + subPath;
     }
 

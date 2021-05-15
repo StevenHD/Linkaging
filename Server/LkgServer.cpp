@@ -50,7 +50,7 @@ void LkgServer::acceptConnection()
 {
     while (1)
     {
-        int acceptFd = accept4(m_lsnFd, nullptr, nullptr, SOCK_NONBLOCK | SOCK_CLOEXEC);
+        int acceptFd = ::accept4(m_lsnFd, nullptr, nullptr, SOCK_NONBLOCK | SOCK_CLOEXEC);
         if (acceptFd == -1)
         {
             if (errno == EAGAIN) break;

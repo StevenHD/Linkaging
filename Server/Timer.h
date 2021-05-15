@@ -6,81 +6,85 @@
 #define MODERNCPP_TIMER_H
 
 #include "../all.h"
-#include "HttpRequest.h"
 
 namespace Linkaging
 {
-    using TimeoutCallback = std::function<void(void)>;
-    using Clock = std::chrono::high_resolution_clock;
-    using MS = std::chrono::milliseconds;
-    using TimeStamp = Clock::time_point;
+using TimeoutCallbak = std::function<void()>;
+using Clock = std::chrono::high_resolution_clock;
+using MS = std::chrono::milliseconds;
+using TimeStamp = Clock::time_point;
 
-    class HttpRequest;
+class HttpRequest;
 
-    std::function<void(void)> b;
-    std::function<void(void)> a;
+class Timer
+{
+private:
+    TimeStamp m_expiredTime;
+    TimeoutCallbak c_callBack;
+    bool m_delete;
 
-    class Timer
+public:
+    Timer(const TimeStamp &when, const TimeoutCallbak &cb)
+            : m_expiredTime(when), c_callBack(cb), m_delete(false) {}
+
+    ~Timer() {}
+
+    void del()
     {
-    private:
-        TimeStamp m_expiredTime;
-        TimeoutCallback c_callBack;
-        bool m_delete;
+        m_delete = true;
+    }
 
-    public:
-        Timer(const TimeStamp &when, const TimeoutCallback &cb)
-                : m_expiredTime(when), c_callBack(cb), m_delete(false) {}
+    bool isDeleted()
+    {
+        return m_delete;
+    }
 
-        ~Timer() {}
+    void runCallBack()
+    {
+        c_callBack();
+    }
 
-        void del() {
-            m_delete = true;
-        }
+    TimeStamp getExpiredTime() const
+    {
+        return m_expiredTime;
+    }
+};
 
-        bool isDeleted() const {
-            return m_delete;
-        }
+struct cmp
+{
+    bool operator()(Timer *lhs, Timer *rhs)
+    {
+        assert(lhs != nullptr && rhs != nullptr);
+        return (lhs->getExpiredTime()) > (rhs->getExpiredTime());
+    }
+};
 
-        void runCallBack() {
-            c_callBack();
-        }
+class TimerManager
+{
+private:
+    using TimerQueue = std::priority_queue<Timer *, std::vector<Timer *>, cmp>;
+    TimerQueue m_timerQueue;
+    TimeStamp m_nowTime;
+    std::mutex m_mtx;
 
-        TimeStamp getExpiredTime() const {
-            return m_expiredTime;
-        }
-    };
+public:
+    TimerManager()
+            : m_nowTime(Clock::now()) {}
 
-    struct cmp {
-        bool operator()(Timer *lhs, Timer *rhs) {
-            assert(lhs != nullptr && rhs != nullptr);
-            return (lhs->getExpiredTime() > rhs->getExpiredTime());
-        }
-    };
+    ~TimerManager() {}
 
-    class TimerManager {
-    private:
-        using TimerQueue = std::priority_queue<Timer *, std::vector<Timer *>, cmp>;
-        TimerQueue m_timerQueue;
-        TimeStamp m_nowTime;
-        std::mutex m_mtx;
+    void updateTime()
+    {
+        m_nowTime = Clock::now();
+    }
 
-    public:
-        TimerManager()
-                : m_nowTime(Clock::now()) {}
+    void addTimer(HttpRequest *req, const int &time_out, const TimeoutCallbak &cb);
 
-        ~TimerManager() {}
+    void delTimer(HttpRequest *req);
 
-        void updateTime() {
-            m_nowTime = Clock::now();
-        }
+    void handleExpiredTimers();
 
-        void addTimer(HttpRequest *req, const int &time_out, const TimeoutCallback &cb);
-
-        void delTimer(HttpRequest *req);
-
-        void handleExpiredTimers();
-
-        int getNearestExpiredTimer();
-    };
+    int getNearestExpiredTimer();
+};
 }
 #endif //MODERNCPP_TIMER_H

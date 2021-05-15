@@ -7,7 +7,8 @@
 
 #include "../all.h"
 
-const int CONNECT_TIMEOUT = 500; // de-active connection will break over 500ms
+#define CONNECT_TIMEOUT 500 // de-active connection will break over 500ms
+
 namespace Linkaging
 {
 

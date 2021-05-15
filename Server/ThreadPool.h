@@ -7,25 +7,29 @@
 
 #include "../all.h"
 
-namespace Linkaging {
-    class ThreadPool {
-    public:
-        using JobFunction = std::function<void()>;
+namespace Linkaging
+{
 
-    private:
-        std::vector<std::thread> m_threads;
-        std::mutex m_mtx;
-        std::condition_variable m_cv;
-        std::queue<JobFunction> m_jobs;
-        bool m_isStop;
+class ThreadPool
+{
+public:
+    using JobFunction = std::function<void()>;
 
-    public:
-        ThreadPool(int numWkrs);
+private:
+    std::vector<std::thread> m_threads;
+    std::mutex m_mtx;
+    std::condition_variable m_cv;
+    std::queue<JobFunction> m_jobs;
+    bool m_isStop;
 
-        ~ThreadPool();
+public:
+    ThreadPool(int numWkrs);
 
-        void pushJob(const JobFunction &job);
-    };
+    ~ThreadPool();
+
+    void pushJob(const JobFunction &job);
+};
+
 }
 
 #endif //MODERNCPP_THREADPOOL_H
