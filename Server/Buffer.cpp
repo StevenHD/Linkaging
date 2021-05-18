@@ -7,7 +7,8 @@
 namespace Linkaging
 {
 
-ssize_t Buffer::readFd(int fd, int *savedErrno) {
+ssize_t Buffer::readFd(int fd, int *savedErrno)
+{
     /* 保证一次读到足够多的数据 */
     char extraBuf[65536];
     struct iovec vec[2];
@@ -19,12 +20,17 @@ ssize_t Buffer::readFd(int fd, int *savedErrno) {
 
     const ssize_t n = ::readv(fd, vec, 2);
 
-    if (n < 0) {
+    if (n < 0)
+    {
         printf("[Buffer:readFd]fd = %d readv : %s\n", fd, strerror(errno));
         *savedErrno = errno;
-    } else if (static_cast<size_t>(n) <= writable) {
+    }
+    else if (static_cast<size_t>(n) <= writable)
+    {
         m_writerIdx += n;
-    } else {
+    }
+    else
+    {
         m_writerIdx = m_buffer.size();
         append(extraBuf, n - writable);
     }

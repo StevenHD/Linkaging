@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv)
 {
-    int port = 9998;
+    int port = 9997;
     if(argc >= 2)
     {
         port = atoi(argv[1]);

@@ -57,7 +57,7 @@ void TimerManager::handleExpiredTimers()
         if (timer->isDeleted())
         {
             std::cout << "[TimerManager::handleExpiredTimers] timer = "
-                << Clock::to_time_t(timer->getExpiredTime()) << "is deleted" << std::endl;
+                << Clock::to_time_t(timer->getExpiredTime()) << " is deleted" << std::endl;
             m_timerQueue.pop();
             delete timer;
             continue;
@@ -66,9 +66,12 @@ void TimerManager::handleExpiredTimers()
         // 优先队列头部的定时器也没有超时，return
         if (std::chrono::duration_cast<MS>(timer->getExpiredTime() - m_nowTime).count() > 0)
         {
-            std::cout << "[TimerManager::handleExpiredTimers] timeout" << std::endl;
+            std::cout << "[TimerManager::handleExpiredTimers] there is no timeout timer" << std::endl;
             return;
         }
+
+        // chao shi
+        std::cout << "[TimerManager::handleExpiredTimers] timeout" << std::endl;
 
         timer->runCallBack();
         m_timerQueue.pop();

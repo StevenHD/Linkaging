@@ -9,16 +9,16 @@ namespace Linkaging
 
 ThreadPool::ThreadPool(int numWkrs) : m_isStop(false)
 {
-    numWkrs = (numWkrs <= 0) ? 1 : numWkrs;
+    numWkrs = numWkrs <= 0 ? 1 : numWkrs;
     for (int i = 0; i < numWkrs; ++i)
-        m_threads.emplace_back([this]()     // this是什么意思？
+        m_threads.emplace_back([this]()
         {
             while (1)
             {
                 JobFunction func;
                 {
                     std::unique_lock<std::mutex> lck(m_mtx);
-                    while (!m_isStop && m_jobs.empty())
+                    while (m_isStop == false && m_jobs.empty() == true) // m_isStop?
                     {
                         m_cv.wait(lck);
                     }
@@ -55,6 +55,7 @@ ThreadPool::~ThreadPool()
     {
         thread.join();
     }
+    printf("[ThreadPool::~ThreadPool] threadpool is remove\n");
 }
 
 void ThreadPool::pushJob(const JobFunction &job)

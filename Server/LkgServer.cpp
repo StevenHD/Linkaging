@@ -36,8 +36,8 @@ void LkgServer::run()
 
     while (1)
     {
-        int waitTime = m_timerManager->getNearestExpiredTimer();
-        int eventsNum = m_epoll->wait(waitTime);
+        int timeDiff = m_timerManager->getNearestExpiredTimer();
+        int eventsNum = m_epoll->wait(timeDiff);
         if (eventsNum > 0)
         {
             m_epoll->handleEvent(m_lsnFd, m_threadPool, eventsNum);
@@ -75,21 +75,24 @@ void LkgServer::closeConnection(HttpRequest *req)
     req = nullptr;
 }
 
-void LkgServer::doRequest(HttpRequest *req) {
-    m_timerManager->delTimer(req);
+void LkgServer::doRequest(HttpRequest *req)
+{
+    m_timerManager->delTimer(req); // ?
     assert(req != nullptr);
     int fd = req->getFd();
 
     int rdErrno;
     int retRead = req->readData(&rdErrno);
 
-    if (retRead == 0) {
+    if (retRead == 0)
+    {
         req->setNoWorking();
         closeConnection(req);
         return;
     }
 
-    if (retRead < 0 && (rdErrno != EAGAIN)) {
+    if (retRead < 0 && (rdErrno != EAGAIN))
+    {
         req->setNoWorking();
         closeConnection(req);
         return;
@@ -118,7 +121,7 @@ void LkgServer::doRequest(HttpRequest *req) {
     {
         HttpResponse response(200, req->getPath(), req->keepAlive());
         req->appendOutBuffer(response.makeResponse());
-        m_epoll->mod(fd, req, (EPOLLIN | EPOLLOUT | EPOLLONESHOT));
+        m_epoll->mod(fd, req, (EPOLLIN | EPOLLOUT | EPOLLONESHOT)); //?
     }
 }
 
@@ -137,22 +140,22 @@ void LkgServer::doResponse(HttpRequest *req)
     }
 
     int wrErrno;
-    int ret = req->writeData(&wrErrno);
+    int retWrite = req->writeData(&wrErrno);
 
-    if (ret < 0 && wrErrno == EAGAIN)
+    if (retWrite < 0 && wrErrno == EAGAIN)
     {
         m_epoll->mod(fd, req, (EPOLLIN | EPOLLOUT | EPOLLONESHOT));
         return;
     }
 
-    if (ret < 0 && (wrErrno != EAGAIN))
+    if (retWrite < 0 && (wrErrno != EAGAIN))
     {
         req->setNoWorking();
         closeConnection(req);
         return;
     }
 
-    if (ret == bytesToWrite)
+    if (retWrite == bytesToWrite)
     {
         if (req->keepAlive())
         {
