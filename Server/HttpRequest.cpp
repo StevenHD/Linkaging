@@ -14,7 +14,8 @@ HttpRequest::HttpRequest(int fd)
     assert(m_fd >= 0);
 }
 
-HttpRequest::~HttpRequest() {
+HttpRequest::~HttpRequest()
+{
     close(m_fd);
 }
 
@@ -37,7 +38,8 @@ bool HttpRequest::parseRequest()
 
     while (hasMore)
     {
-        if (m_state == RequestLine) {
+        if (m_state == RequestLine)
+        {
             // 处理请求行
             const char *crlf = m_inBuff.findCRLF();
             if (crlf)
@@ -58,7 +60,8 @@ bool HttpRequest::parseRequest()
                 hasMore = false;
             }
         }
-        else if (m_state == RequestHeader) {
+        else if (m_state == RequestHeader)
+        {
             // 处理报文头
             const char *crlf = m_inBuff.findCRLF();
             if (crlf)
@@ -83,7 +86,7 @@ bool HttpRequest::parseRequest()
         }
         else if (m_state == RequestBody)
         {
-            // TODO 处理报文体
+
         }
     }
 
@@ -149,21 +152,24 @@ bool HttpRequest::setHttpMethod(const char *start, const char *end)
     return m_method != Invalid;
 }
 
-void HttpRequest::addHeader(const char *start, const char *colon, const char *end) {
+void HttpRequest::addHeader(const char *start, const char *colon, const char *end)
+{
     std::string field(start, colon);
     ++colon;
 
     while (colon < end && *colon == ' ') ++colon;
 
     std::string value(colon, end);
-    while (!value.empty() && value[value.size() - 1] == ' ') {
+    while (!value.empty() && value[value.size() - 1] == ' ')
+    {
         value.resize(value.size() - 1);
     }
 
     m_header[field] = value;
 }
 
-std::string HttpRequest::getMethod() const {
+std::string HttpRequest::getMethod() const
+{
     std::string res;
 
     if (m_method == Get) res = "GET";
@@ -175,18 +181,21 @@ std::string HttpRequest::getMethod() const {
     return res;
 }
 
-std::string HttpRequest::getHeader(const std::string &field) const {
+std::string HttpRequest::getHeader(const std::string &field) const
+{
     std::string res;
 
     auto itr = m_header.find(field);
-    if (itr != m_header.end()) {
+    if (itr != m_header.end())
+    {
         res = itr->second;
     }
 
     return res;
 }
 
-bool HttpRequest::keepAlive() const {
+bool HttpRequest::keepAlive() const
+{
     std::string connection = getHeader("Connection");
     bool res = connection == "Keep-Alive" ||
                (m_version == Http1_1 && connection != "close");
@@ -194,7 +203,8 @@ bool HttpRequest::keepAlive() const {
     return res;
 }
 
-void HttpRequest::resetParse() {
+void HttpRequest::resetParse()
+{
     m_state = RequestLine; // 报文解析状态
     m_method = Invalid; // HTTP方法
     m_version = Unknown; // HTTP版本

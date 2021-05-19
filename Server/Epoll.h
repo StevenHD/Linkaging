@@ -15,7 +15,7 @@ namespace Linkaging
 class HttpRequest;
 class ThreadPool;
 
-class Epoll
+class Epoll // like muduo's Channel
 {
 public:
     using NewConnectionCallbak      = std::function<void()>;

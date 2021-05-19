@@ -17,11 +17,11 @@ class Buffer
 {
 private:
     std::vector<char> m_buffer;
-    size_t m_readerIdx;
-    size_t m_writerIdx;
+    size_t m_readIndex;
+    size_t m_writeIndex;
 
 public:
-    Buffer() : m_buffer(INIT_SIZE), m_readerIdx(0), m_writerIdx(0)
+    Buffer() : m_buffer(INIT_SIZE), m_readIndex(0), m_writeIndex(0)
     {
         assert(readableBytes() == 0);
         assert(writableBytes() == INIT_SIZE);
@@ -31,28 +31,28 @@ public:
 
     size_t readableBytes() const // 可读字节数
     {
-        return m_writerIdx - m_readerIdx;      // ??不懂为啥溯writeIdx - readIdx
+        return m_writeIndex - m_readIndex;      // ??不懂为啥溯writeIdx - readIdx
     }
 
     size_t writableBytes() const // 可写字节数
     {
-        return m_buffer.size() - m_writerIdx;
+        return m_buffer.size() - m_writeIndex;
     }
 
     size_t prependableBytes() const // m_readerIdx前面的空闲缓冲区大小
     {
-        return m_readerIdx;
+        return m_readIndex - 0;
     }
 
     const char *peek() const // 第一个可读位置
     {
-        return getBufferBegin() + m_readerIdx;
+        return getBufferBegin() + m_readIndex;
     }
 
     void retrieve(size_t len) // 取出len个字节
     {
         assert(len <= readableBytes());
-        m_readerIdx += len;
+        m_readIndex += len;
     }
 
     void retrieveUntil(const char *end) // 取出数据直到end
@@ -64,8 +64,9 @@ public:
 
     void retrieveAll() // 取出buffer内全部数据
     {
-        m_readerIdx = 0;
-        m_writerIdx = 0;
+        // ?
+        m_readIndex = 0;
+        m_writeIndex = 0;
     }
 
     std::string retrieveAsString() // 以string形式取出全部数据
@@ -99,7 +100,8 @@ public:
 
     void ensureWritableBytes(size_t len) // 确保缓冲区有足够空间
     {
-        if (writableBytes() < len) {
+        if (writableBytes() < len)
+        {
             makeBufferSpace(len);
         }
         assert(writableBytes() >= len);
@@ -107,29 +109,31 @@ public:
 
     char *beginWrite() // 可写char指针
     {
-        return getBufferBegin() + m_writerIdx;
+        return getBufferBegin() + m_writeIndex;
     }
 
     const char *beginWrite() const
     {
-        return getBufferBegin() + m_writerIdx;
+        return getBufferBegin() + m_writeIndex;
     }
 
     void hasWritten(size_t len) // 写入数据后移动writerIndex_
     {
-        m_writerIdx += len;
+        m_writeIndex += len;
     }
 
     ssize_t readFd(int fd, int *savedErrno); // 从套接字读到缓冲区
     ssize_t writeFd(int fd, int *savedErrno); // 缓冲区写到套接字
 
-    const char *findCRLF() const {
+    const char *findCRLF() const
+    {
         const char CRLF[] = "\r\n";
         const char *crlf = std::search(peek(), beginWrite(), CRLF, CRLF + 2);
         return crlf == beginWrite() ? nullptr : crlf;
     }
 
-    const char *findCRLF(const char *start) const {
+    const char *findCRLF(const char *start) const
+    {
         assert(peek() <= start);
         assert(start <= beginWrite());
         const char CRLF[] = "\r\n";
@@ -150,15 +154,19 @@ private:
 
     void makeBufferSpace(size_t len) // 确保缓冲区有足够空间
     {
-        if (writableBytes() + prependableBytes() < len) {
-            m_buffer.resize(m_writerIdx + len);
-        } else {
+        if (writableBytes() + prependableBytes() < len)
+        {
+            m_buffer.resize(m_writeIndex + len);
+        }
+        else
+        {
             size_t readable = readableBytes();
-            std::copy(getBufferBegin() + m_readerIdx,
-                      getBufferBegin() + m_writerIdx,
+            std::copy(getBufferBegin() + m_readIndex,
+                      getBufferBegin() + m_writeIndex,
                       getBufferBegin());
-            m_readerIdx = 0;
-            m_writerIdx = m_readerIdx + readable;
+
+            m_readIndex = 0;
+            m_writeIndex = m_readIndex + readable;
             assert(readable == readableBytes());
         }
     }

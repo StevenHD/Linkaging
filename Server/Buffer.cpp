@@ -13,7 +13,8 @@ ssize_t Buffer::readFd(int fd, int *savedErrno)
     char extraBuf[65536];
     struct iovec vec[2];
     const size_t writable = writableBytes();
-    vec[0].iov_base = getBufferBegin() + m_writerIdx;
+
+    vec[0].iov_base = getBufferBegin() + m_writeIndex;
     vec[0].iov_len = writable;
     vec[1].iov_base = extraBuf;
     vec[1].iov_len = sizeof(extraBuf);
@@ -27,32 +28,37 @@ ssize_t Buffer::readFd(int fd, int *savedErrno)
     }
     else if (static_cast<size_t>(n) <= writable)
     {
-        m_writerIdx += n;
+        m_writeIndex += n;
     }
     else
     {
-        m_writerIdx = m_buffer.size();
+        m_writeIndex = m_buffer.size();
         append(extraBuf, n - writable);
     }
 
     return n;
 }
 
-ssize_t Buffer::writeFd(int fd, int *savedErrno) {
+ssize_t Buffer::writeFd(int fd, int *savedErrno)
+{
     size_t nLeft = readableBytes();
-    char *bufPtr = getBufferBegin() + m_readerIdx;
+    char *bufPtr = getBufferBegin() + m_readIndex;
 
     ssize_t n;
 
-    if ((n = ::write(fd, bufPtr, nLeft)) <= 0) {
+    if ((n = ::write(fd, bufPtr, nLeft)) <= 0)
+    {
         if (n < 0 && n == EINTR) return 0;
-        else {
+        else
+        {
             printf("[Buffer:writeFd]fd = %d write : %s\n", fd, strerror(errno));
             *savedErrno = errno;
             return -1;
         }
-    } else {
-        m_readerIdx += n;
+    }
+    else
+    {
+        m_readIndex += n;
         return n;
     }
 }
