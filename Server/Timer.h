@@ -24,6 +24,7 @@ private:
     bool m_delete;
 
 public:
+    /* like muduo's runAt() */
     Timer(const TimeStamp &when, const TimeoutCallbak &cb)
             : m_expiredTime(when), c_callBack(cb), m_delete(false) {}
 
