@@ -11,4 +11,4 @@
 ## 详细文档
 | Part I | Part II | Part III 
 | :-: | :-: | :-: |
-|[服务器模型](./Docs/ServerModel.md)|[服务器架构](./Docs/ServerArch.md)|[CPP11知识点](./Docs/CPP11.md)
+|[服务器模型](./Docs/ServerModel.md)|[服务器架构](./Docs/ServerArch.md)|[CPP11知识点](./Docs/Cpp11.md)
