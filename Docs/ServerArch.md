@@ -145,7 +145,7 @@ void LkgServer::doRequest(HttpRequest *req)
 }
 ```
 
-6. 可写事件
+### 6. 可写事件
 - 删除文件描述符的超时定时器
 - 若文件描述符的输出缓冲区为空，设置超时定时器，直接返回
 - 往文件描述符中写数据，根据write的返回值处理
@@ -209,7 +209,7 @@ void LkgServer::doResponse(HttpRequest *req)
 }
 ```
 
-7. 线程池
+### 7. 线程池
 - 线程池的定义如下
 ```C++
 class ThreadPool
@@ -252,7 +252,7 @@ void ThreadPool::pushJob(const JobFunction &job)
 }
 ```
 
-8. 定时器
+### 8. 定时器
 - 定时器有两个类`Timer`和`TimerManager`
 - `TimerManager类`用小根堆管理Timer，根据超时时间排序
 - `TimerManager`的关键函数是`addTimer`、`delTimer`、`handleExpireTimers`和`getNextExpireTime`
